@@ -5,9 +5,12 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\RideRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RideRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => ['ride:read']],
+    denormalizationContext: ['groups' => ['ride:write']],
     paginationEnabled: false,
 )]
 class Ride
@@ -34,9 +37,11 @@ class Ride
 
     #[ORM\ManyToOne(inversedBy: 'Rides')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['taxi:read', 'car:read', 'car:write'])]
     private ?Taxi $taxi = null;
 
     #[ORM\ManyToOne(inversedBy: 'rides')]
+    #[Groups(['taxi:read', 'car:read', 'car:write'])]
     private ?Client $client = null;
 
     public function getId(): ?int

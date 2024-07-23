@@ -7,9 +7,12 @@ use App\Repository\TaxiRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TaxiRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => ['taxi:read']],
+    denormalizationContext: ['groups' => ['taxi:write']],
     paginationEnabled: false,
 )]
 class Taxi
@@ -20,19 +23,23 @@ class Taxi
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['car:read', 'car:write'])]
     private ?int $totalKm = null;
 
     #[ORM\ManyToOne(inversedBy: 'taxis')]
+    #[Groups(['car:read', 'car:write'])]
     private ?driver $driver = null;
 
     #[ORM\ManyToOne(inversedBy: 'taxis')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['car:read', 'car:write'])]
     private ?CarModel $CarModel = null;
 
     /**
      * @var Collection<int, ride>
      */
     #[ORM\OneToMany(targetEntity: Ride::class, mappedBy: 'taxi')]
+    #[Groups(['car:read', 'car:write'])]
     private Collection $Rides;
 
     public function __construct()
